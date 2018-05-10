@@ -25,47 +25,73 @@
       <div class="col-md-6">
         <img class="img-responsive" src="img/mytubegram.png" width="454" height="618"/>
       </div>
-      <div class="col-md-5" style="background-color: white; padding: 60px; border: 1px solid #e6e6e6;">
-        <h3 class="text-center" style="margin-top:0">MyTubeGram</h3>
-        <p class="text-center" style="color:#999;font-weight:700;font-size:17px;line-height:20px;">Sign up to see photos and videos from your friends.</p>
-        <form action="">
-          <div class="form-group">
-            <button type="submit" class="btn btn-default" style="width:100%;background-color:#3897f0;color:white;"><b>Log in with Facebook</b></button>
-          </div>
-          <div class="form-group">
-              <div class="col-md-5" style="padding:0">
-                  <hr>
-              </div>
-              <div class="col-md-2 text-center">
-                  <b style="font-size:14px">OR</b>
-              </div>
-              <div class="col-md-5" style="padding:0">
-                  <hr>
-              </div>
-          </div>
-          <div class="form-group">
-            <input type="text" class="form-control" placeholder="First Name">
-          </div>
-          <div class="form-group">
-            <input type="text" class="form-control" placeholder="Last Name">
-          </div>
-          <div class="form-group">
-            <input type="text" class="form-control" placeholder="Username">
-          </div>
-          <div class="form-group">
-            <input type="password" class="form-control" placeholder="Password">
-          </div>
-          <div class="form-group">
-            <button type="submit" class="btn btn-default" style="width:100%;background-color:#3897f0;color:white;"><b>Sign Up</b></button>
-          </div>
-        </form>
-        <p class="text-center" style="color:#999;font-weight:700;font-size:14px;line-height:18px;">
-            By signing up, you agree to our <br> <b style="color:#000">Terms</b> & <b style="color:#000">Privacy Policy</b>.
-        </p>
-        <br>
-        <p class="text-center">
-            Have an account? <a style="cursor: pointer;">Log in</a>
-        </p>
+      <div v-if="login == true">
+        <div class="col-md-5" style="background-color: white; padding: 60px; border: 1px solid #e6e6e6;">
+          <h3 class="text-center" style="margin-top:0">MyTubeGram</h3>
+          <p class="text-center" style="color:#999;font-weight:700;font-size:17px;line-height:20px;">Sign up to see photos and videos from your friends.</p>
+          <form action="">
+            <div class="form-group">
+              <button type="submit" class="btn btn-default" style="width:100%;background-color:#3897f0;color:white;"><b>Log in with Facebook</b></button>
+            </div>
+            <div class="form-group">
+                <div class="col-md-5" style="padding:0">
+                    <hr>
+                </div>
+                <div class="col-md-2 text-center">
+                    <b style="font-size:14px">OR</b>
+                </div>
+                <div class="col-md-5" style="padding:0">
+                    <hr>
+                </div>
+            </div>
+            <div class="form-group">
+              <input type="text" class="form-control" placeholder="First Name">
+            </div>
+            <div class="form-group">
+              <input type="text" class="form-control" placeholder="Last Name">
+            </div>
+            <div class="form-group">
+              <input type="text" class="form-control" placeholder="Username">
+            </div>
+            <div class="form-group">
+              <input type="password" class="form-control" placeholder="Password">
+            </div>
+            <div class="form-group">
+              <button type="submit" class="btn btn-default" style="width:100%;background-color:#3897f0;color:white;"><b>Sign Up</b></button>
+            </div>
+          </form>
+          <p class="text-center" style="color:#999;font-weight:700;font-size:14px;line-height:18px;">
+              By signing up, you agree to our <br> <b style="color:#000">Terms</b> & <b style="color:#000">Privacy Policy</b>.
+          </p>
+          <br>
+          <p class="text-center">
+              Have an account? <a @click="changeLogin" style="cursor: pointer;">Log in</a>
+          </p>
+        </div>
+      </div>
+      <div v-else>
+        <div class="col-md-5" style="background-color: white; padding: 60px; border: 1px solid #e6e6e6;">
+          <h3 class="text-center" style="margin-top:0">MyTubeGram</h3>
+          <p class="text-center" style="color:#999;font-weight:700;font-size:17px;line-height:20px;">Sign In to see photos and videos from your friends.</p>
+          <form action="">
+            <div class="form-group">
+              <input type="text" class="form-control" placeholder="Username">
+            </div>
+            <div class="form-group">
+              <input type="password" class="form-control" placeholder="Password">
+            </div>
+            <div class="form-group">
+              <button type="submit" class="btn btn-default" style="width:100%;background-color:#3897f0;color:white;"><b>Sign In</b></button>
+            </div>
+          </form>
+          <p class="text-center" style="color:#999;font-weight:700;font-size:14px;line-height:18px;">
+              By signing up, you agree to our <br> <b style="color:#000">Terms</b> & <b style="color:#000">Privacy Policy</b>.
+          </p>
+          <br>
+          <p class="text-center">
+              Have an login? <a @click="changeLoginToRegister" style="cursor: pointer;">Sign Up</a>
+          </p>
+        </div>
       </div>
     </div>
   </div>
@@ -76,7 +102,15 @@
     const app = new Vue({
       el: '#app',
       data: {
-
+        login: true
+      },
+      methods: {
+        changeLogin: function(){
+          this.login = false
+        },
+        changeLoginToRegister: function(){
+          this.login = true
+        }
       }
     })
   </script>
