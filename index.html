@@ -29,37 +29,35 @@
         <div class="col-md-5" style="background-color: white; padding: 60px; border: 1px solid #e6e6e6;">
           <h3 class="text-center" style="margin-top:0">MyTubeGram</h3>
           <p class="text-center" style="color:#999;font-weight:700;font-size:17px;line-height:20px;">Sign up to see photos and videos from your friends.</p>
-          <form action="">
             <div class="form-group">
               <button type="submit" class="btn btn-default" style="width:100%;background-color:#3897f0;color:white;"><b>Log in with Facebook</b></button>
             </div>
-            <div class="form-group">
-                <div class="col-md-5" style="padding:0">
-                    <hr>
-                </div>
-                <div class="col-md-2 text-center">
-                    <b style="font-size:14px">OR</b>
-                </div>
-                <div class="col-md-5" style="padding:0">
-                    <hr>
-                </div>
-            </div>
-            <div class="form-group">
-              <input type="text" class="form-control" placeholder="First Name">
-            </div>
-            <div class="form-group">
-              <input type="text" class="form-control" placeholder="Last Name">
-            </div>
-            <div class="form-group">
-              <input type="text" class="form-control" placeholder="Username">
-            </div>
-            <div class="form-group">
-              <input type="password" class="form-control" placeholder="Password">
-            </div>
-            <div class="form-group">
-              <button type="submit" class="btn btn-default" style="width:100%;background-color:#3897f0;color:white;"><b>Sign Up</b></button>
-            </div>
-          </form>
+          <div class="form-group">
+              <div class="col-md-5" style="padding:0">
+                  <hr>
+              </div>
+              <div class="col-md-2 text-center">
+                  <b style="font-size:14px">OR</b>
+              </div>
+              <div class="col-md-5" style="padding:0">
+                  <hr>
+              </div>
+          </div>
+          <div class="form-group">
+            <input type="text" class="form-control" v-model="firstname" placeholder="First Name">
+          </div>
+          <div class="form-group">
+            <input type="text" class="form-control" v-model="lastname" placeholder="Last Name">
+          </div>
+          <div class="form-group">
+            <input type="text" class="form-control" v-model="username" placeholder="Username">
+          </div>
+          <div class="form-group">
+            <input type="password" class="form-control" v-model="password" placeholder="Password">
+          </div>
+          <div class="form-group">
+            <button type="submit" class="btn btn-default" @click="registerUser()" style="width:100%;background-color:#3897f0;color:white;"><b>Sign Up</b></button>
+          </div>
           <p class="text-center" style="color:#999;font-weight:700;font-size:14px;line-height:18px;">
               By signing up, you agree to our <br> <b style="color:#000">Terms</b> & <b style="color:#000">Privacy Policy</b>.
           </p>
@@ -73,17 +71,15 @@
         <div class="col-md-5" style="background-color: white; padding: 60px; border: 1px solid #e6e6e6;">
           <h3 class="text-center" style="margin-top:0">MyTubeGram</h3>
           <p class="text-center" style="color:#999;font-weight:700;font-size:17px;line-height:20px;">Sign In to see photos and videos from your friends.</p>
-          <form action="">
-            <div class="form-group">
-              <input type="text" class="form-control" placeholder="Username">
-            </div>
-            <div class="form-group">
-              <input type="password" class="form-control" placeholder="Password">
-            </div>
-            <div class="form-group">
-              <button type="submit" class="btn btn-default" style="width:100%;background-color:#3897f0;color:white;"><b>Sign In</b></button>
-            </div>
-          </form>
+          <div class="form-group">
+            <input type="text" class="form-control" v-model="username" placeholder="Username">
+          </div>
+          <div class="form-group">
+            <input type="password" class="form-control" v-model="password" placeholder="Password">
+          </div>
+          <div class="form-group">
+            <button type="submit" class="btn btn-default" @click="checkLoginStatus()" style="width:100%;background-color:#3897f0;color:white;"><b>Sign In</b></button>
+          </div>
           <p class="text-center" style="color:#999;font-weight:700;font-size:14px;line-height:18px;">
               By signing up, you agree to our <br> <b style="color:#000">Terms</b> & <b style="color:#000">Privacy Policy</b>.
           </p>
@@ -102,14 +98,51 @@
     const app = new Vue({
       el: '#app',
       data: {
-        login: true
+        login: true,
+        firstname: '',
+        lastname: '',
+        username: '',
+        password: ''
       },
       methods: {
-        changeLogin: function(){
+        changeLogin: function () {
           this.login = false
         },
-        changeLoginToRegister: function(){
+        changeLoginToRegister: function () {
           this.login = true
+        },
+        checkLoginStatus: function () {
+          axios
+            .post('http://localhost:3000/users/login', {
+              username: this.username,
+              password: this.password
+            })
+            .then(response => {
+              if (response.data.token) {
+                localStorage.setItem('token', response.data.token)
+                window.location.href = 'content.html'
+              }
+            })
+            .catch(err => {
+              console.log(err)
+            })
+        },
+        registerUser: function () {
+          axios
+            .post('http://localhost:3000/users/register', {
+              username: this.username,
+              firstname: this.firstname,
+              lastname: this.lastname,
+              password: this.password
+            })
+            .then(response => {
+              if (response.username) {
+                this.login = false
+              }
+            })
+            .catch(err => {
+              console.log(err)
+            })
         }
       }
     })
