@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <title>My Tube Gram</title>
+  <style>
+    body {
+      background-color: #fafafa;
+    }
+
+    @media (min-width: 1200px) {
+      .container {
+        width: 970px;
+      }
+    }
+
+    .dropdown-menu {
+      position: none !important;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <nav class="navbar navbar-default navbar-fixed-top" style="background-color:white">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"
+            aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">MyTubeGram</a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          <form class="navbar-form navbar-left">
+            <div class="form-group">
+              <input type="text" class="form-control" placeholder="Search">
+            </div>
+            <button type="submit" class="btn btn-default glyphicon glyphicon-search"></button>
+          </form>
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <a data-toggle="modal" data-target="#myModal" style="cursor:pointer">
+                <span class="glyphicon glyphicon-send"></span> POST</a>
+            </li>
+            <li>
+              <a style="cursor:pointer" @click="doLogout">
+                <span class="glyphicon glyphicon-log-out"></span> LOGOUT</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div id="myModal" class="modal fade" role="dialog">
+      <div class="modal-dialog modal-lg">
+
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">POST STATUS</h4>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label>File Video:</label>
+              <input type="file" class="form-control" @change="postVideoHandler">
+            </div>
+            <div class="form-group">
+              <label>Name Video:</label>
+              <input type="text" class="form-control" v-model="title">
+            </div>
+            <div class="form-group">
+              <label>Description:</label>
+              <textarea class="form-control" rows="4" cols="50" v-model="description"></textarea>
+            </div>
+            <button type="submit" class="btn btn-warning" @click="postVideo()" data-dismiss="modal">POST</button>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="container" style="margin-top:70px; padding:0;">
+      <div class="col-md-8">
+
+        <field-content v-for="(list, index) in listVideo" :key="index" :list="list" :user-id="user.id"  @update-length="UpdateLength(list)" @update-heart-on="UpdateHeartOn(list)"
+          @update-heart-off="UpdateHeartOff(list)" @delete-video="deleteVideo(list._id)">
+        </field-content>
+
+      </div>
+      <div class="col-md-4">
+        <div class="thumbnail" style="padding: 10px;">
+          <label>Profile</label>
+          <p>{{ user.name }}</p>
+          <p>{{ user.email }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="js/content.js"></script>
+  <script>
+    const app = new Vue({
+      el: '#app',
+      data: {
+        title: '',
+        description: '',
+        video: '',
+        listVideo: [],
+        user: {
+          id: localStorage.getItem('id'),
+          name: localStorage.getItem('user'),
+          email: localStorage.getItem('email')
+        }
+      },
+      beforeCreate () {
+        if(!localStorage.getItem('token')){
+          window.location.href = 'index.html'
+        }
+      },
+      methods: {
+        UpdateLength: function (list) {
+          this.post.some(check => {
+            if (check.readmore == list.readmore) {
+              check.lengthText = list.readmore.length
+              check.statusReadmore = false
+            }
+          })
+        },
+        UpdateHeartOn: function (list) {
+          this.post.some(check => {
+            if (check.readmore == list.readmore) {
+              check.statusHeart = false
+            }
+          })
+        },
+        UpdateHeartOff: function (list) {
+          this.post.some(check => {
+            if (check.readmore == list.readmore) {
+              check.statusHeart = true
+            }
+          })
+        },
+        postVideo: function () {
+          let formData = new FormData()
+          console.log(this.user.id, 'ini user id')
+          
+          formData.append('title', this.title)
+          formData.append('description', this.description)
+          formData.append('video', this.video)
+          formData.append('userId', this.user.id)
+
+          console.log(formData)
+
+          axios.post('http://localhost:3000/videos', formData, {
+            'Content-Type': 'multipart/form-data',
+            token: localStorage.getItem('token')
+          })
+          .then(response => {
+            console.log(response.data)
+            window.location.href = 'content.html'
+          })
+          .catch(err => {
+            console.log(err)
+          })
+        },
+        postVideoHandler: function (event) {
+          this.video = event.target.files[0]
+        },
+        showVideo: function () {
+          axios.get('http://localhost:3000/videos', {
+            headers: {
+              token: localStorage.getItem('token')
+            }
+          })
+          .then(response => {
+            this.listVideo = response.data.result
+          })
+          .catch(err => {
+            console.log(err)
+          })
+        },
+        deleteVideo: function (id) {
+          axios.delete(`http://localhost:3000/videos/${id}`, {
+            headers: {
+              token: localStorage.getItem('token')
+            }
+          })
+          .then(response => {
+            alert('video has been deleted successfully')
+          })
+          .catch(err => {
+            console.log(err)
+          })
+        },
+        doLogout () {
+          localStorage.removeItem('token')
+          localStorage.removeItem('id')
+          localStorage.removeItem('user')
+          localStorage.removeItem('email')
+          window.location.href = 'index.html'
+        }
+      },
+      mounted () {
+        if (localStorage.getItem('token')) {
+          this.showVideo()
+        }
+      }
+    })
+  </script>
+</body>
+
+</html>
